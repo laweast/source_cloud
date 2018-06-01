@@ -1,0 +1,66 @@
+## 함수
+```{r}
+air <- function(x){
+  y<-read.csv(x, header = T, stringsAsFactors = F)
+  y$지역 <- substr(y$지역, 1,2)
+  y <- y[y$지역 =="서울", ]
+  y <- y[ , c("측정일시", "주소", "PM10")]    # 필요한 열만 추출
+  colnames(y) <- c("날짜", "구", "미세먼지")
+
+  # 날짜 변환
+  y$날짜 <- substr(y$날짜, 1, 8)
+  y$날짜 <- as.Date(y$날짜, "%Y%m%d")
+
+  # 구만 뽑기
+  gu<-strsplit(y$구, " ")
+  for(i in 1:length(gu)){
+            y$구[i] <-  gu[[i]][2]
+  }
+  
+  # 구 데이터 확인
+  unique(y$구)                     
+  y$구 <- gsub("강서로45다길", "강서구",y$구)
+  
+  
+  df<-aggregate(미세먼지~날짜+구,y, mean)
+  return(df)
+  }
+```
+
+## 데이터 합치기
+```{r}
+a<-air("c:/r/미세먼지/2014년 1분기.csv")
+b<-air("c:/r/미세먼지/2014년 2분기.csv")
+c<-air("c:/r/미세먼지/2014년 3분기.csv")
+d<-air("c:/r/미세먼지/2014년 4분기.csv")
+e<-air("c:/r/미세먼지/2015년 1분기.csv")
+f<-air("c:/r/미세먼지/2015년 2분기.csv")
+g<-air("c:/r/미세먼지/2015년 3분기.csv")
+h<-air("c:/r/미세먼지/2015년 4분기.csv")
+i<-air("c:/r/미세먼지/2016년 1분기.csv")
+j<-air("c:/r/미세먼지/2016년 2분기.csv")
+k<-air("c:/r/미세먼지/2016년 3분기.csv")
+l<-air("c:/r/미세먼지/2016년 4분기.csv")
+m<-air("c:/r/미세먼지/2017년 1분기.csv")
+n<-air("c:/r/미세먼지/2017년 2분기.csv")
+o<-air("c:/r/미세먼지/2017년 3분기.csv")
+
+all <- rbind(a,b,c,d,e,f,g,h,i,j,k)
+```
+
+
+
+
+```{r}
+gn <- df[df$구 =="강남구", c("미세먼지")]
+
+s <- min(df$날짜)
+e <- max(df$날짜)
+
+gn1 <- ts(gn, frequency = 12,start= s, end = e)
+gn1
+plot(gn1)
+
+```
+
+
