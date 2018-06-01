@@ -29,38 +29,72 @@ air <- function(x){
 
 ## 데이터 합치기
 ```{r}
-a<-air("c:/r/미세먼지/2014년 1분기.csv")
-b<-air("c:/r/미세먼지/2014년 2분기.csv")
-c<-air("c:/r/미세먼지/2014년 3분기.csv")
-d<-air("c:/r/미세먼지/2014년 4분기.csv")
-e<-air("c:/r/미세먼지/2015년 1분기.csv")
-f<-air("c:/r/미세먼지/2015년 2분기.csv")
-g<-air("c:/r/미세먼지/2015년 3분기.csv")
-h<-air("c:/r/미세먼지/2015년 4분기.csv")
-i<-air("c:/r/미세먼지/2016년 1분기.csv")
-j<-air("c:/r/미세먼지/2016년 2분기.csv")
-k<-air("c:/r/미세먼지/2016년 3분기.csv")
-l<-air("c:/r/미세먼지/2016년 4분기.csv")
-m<-air("c:/r/미세먼지/2017년 1분기.csv")
-n<-air("c:/r/미세먼지/2017년 2분기.csv")
-o<-air("c:/r/미세먼지/2017년 3분기.csv")
+y14_1<-air("c:/r/미세먼지/2014년 1분기.csv")
+y14_2<-air("c:/r/미세먼지/2014년 2분기.csv")
+y14_3<-air("c:/r/미세먼지/2014년 3분기.csv")
+y14_4<-air("c:/r/미세먼지/2014년 4분기.csv")
+y15_1<-air("c:/r/미세먼지/2015년 1분기.csv")
+y15_2<-air("c:/r/미세먼지/2015년 2분기.csv")
+y15_3<-air("c:/r/미세먼지/2015년 3분기.csv")
+y15_4<-air("c:/r/미세먼지/2015년 4분기.csv")
+y16_1<-air("c:/r/미세먼지/2016년 1분기.csv")
+y16_2<-air("c:/r/미세먼지/2016년 2분기.csv")
+y16_3<-air("c:/r/미세먼지/2016년 3분기.csv")
+y16_4<-air("c:/r/미세먼지/2016년 4분기.csv")
+y17_1<-air("c:/r/미세먼지/2017년 1분기.csv")
+y17_2<-air("c:/r/미세먼지/2017년 2분기.csv")
+y17_3<-air("c:/r/미세먼지/2017년 3분기.csv")
 
-all <- rbind(a,b,c,d,e,f,g,h,i,j,k)
+test_data <- rbind(y14_1, y14_2, y14_3, y14_4,
+                   y15_1, y15_2, y15_3, y15_4,
+                   y16_1, y16_2, y16_3, y16_4)
+                   
+real_data <- rbind(y17_1, y17_2, y17_3)
+
+
 ```
-
 
 
 
 ```{r}
-gn <- df[df$구 =="강남구", c("미세먼지")]
+gn <- test_data[test_data$구 =="강남구", c("미세먼지")]
+gn_real <- real_data[real_data$구 =="강남구", c("미세먼지")]
 
-s <- min(df$날짜)
-e <- max(df$날짜)
 
-gn1 <- ts(gn, frequency = 12,start= s, end = e)
-gn1
-plot(gn1)
+s <- min(test_data$날짜)
+e <- max(test_data$날짜)
+
+gn_ts <- ts(gn ,start = s, end =e)
+
+plot(gn_ts)
 
 ```
 
+
+```{r}
+acf(gn_ts)
+pacf(gn_ts)
+
+```
+
+
+```{r}
+library(forecast)
+gnBest <- auto.arima(x= gn_ts)
+gnBest
+acf(gnBest$residuals)
+pacf(gnBest$residuals)
+
+```
+
+
+```{r}
+coef(gnBest)
+pred <- predict(gnBest, n.ahead = 30, se.fit = TRUE)
+fore<- forecast(object=gnBest, h = 30)
+plot(fore)
+
+pred
+gn_real[1:30]
+```
 
