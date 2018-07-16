@@ -90,10 +90,6 @@ ggplot(df, aes(x=k, y=accuracy)) +
 ```
 
 
-
-
-
-
 ## train data, test data 분류
 
 
@@ -207,16 +203,11 @@ diabets <- diabets[order(runif(768)), ]
 ```
 
 
-
 ## train, test data set
 ```{r}
 d_train <- diabets[1:614, ]
 d_test <- diabets[615:768, ]
 ```
-
-
-
-
 
 
 # 모델 테스트
